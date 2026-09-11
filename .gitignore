@@ -34,3 +34,5 @@ Thumbs.db
 # Terraform plans
 *.tfplan
 plan.txt
+
+github-actions-trust-policy.json
