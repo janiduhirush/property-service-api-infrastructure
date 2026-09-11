@@ -1,3 +1,4 @@
+
 name: Deploy
 
 on:
@@ -25,8 +26,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # -----------------------------
+      # Checkout
+      # -----------------------------
       - name: Checkout
         uses: actions/checkout@v4
+
+      # -----------------------------
+      # DEBUG GitHub OIDC
+      # -----------------------------
+      - name: Debug GitHub OIDC
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const token = await core.getIDToken('sts.amazonaws.com');
+            const payload = JSON.parse(
+              Buffer.from(token.split('.')[1], 'base64url').toString()
+            );
+
+            console.log("OIDC issuer:", payload.iss);
+            console.log("OIDC audience:", payload.aud);
+            console.log("OIDC subject:", payload.sub);
 
       # -----------------------------
       # AWS authentication via OIDC
@@ -105,7 +125,7 @@ jobs:
             -var="image_tag=${{ github.sha }}"
 
       # -----------------------------
-      # Deploy ECS
+      # Deploy infrastructure
       # -----------------------------
       - name: Terraform Apply
         working-directory: ${{ env.TERRAFORM_DIR }}
@@ -137,3 +157,4 @@ jobs:
             --region "$AWS_REGION" \
             --query 'services[0].{desired:desiredCount,running:runningCount,pending:pendingCount,status:status}' \
             --output table
+```
