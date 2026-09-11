@@ -8,10 +8,7 @@ variable "environment_name" {
   default = "dev"
 }
 
-variable "vpc_id" {
-  description = "Existing VPC ID, matching the CloudFormation template behavior."
-  type        = string
-}
+
 
 variable "vpc_cidr" {
   type    = string
